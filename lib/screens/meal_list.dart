@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meals_app/models/meal.dart';
+import 'package:meals_app/repositories/meal_repository.dart';
 import 'package:meals_app/services/meal_service.dart';
 
 class MealList extends StatefulWidget {
@@ -49,18 +50,54 @@ class MealItem extends StatefulWidget {
 }
 
 class _MealItemState extends State<MealItem> {
+  bool _favorite = false;
+  MealRepository? _repository;
+
+  initialize() async {
+    _favorite = await _repository?.isFavorite(widget.meal) ?? false;
+    if (mounted) {
+      setState(() {
+        _favorite = _favorite;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    _repository = MealRepository();
+    initialize();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final image = Image.network(widget.meal.imageUrl);
-
+    final icon = _favorite
+        ? const Icon(
+            Icons.favorite,
+            color: Colors.red,
+          )
+        : const Icon(
+            Icons.favorite,
+            color: Colors.grey,
+          );
     return Card(
-      child: ListTile(
-        leading: image,
-        title: Text(
-          widget.meal.name,
-        ),
-        trailing: const Icon(Icons.favorite),
+        child: ListTile(
+      leading: image,
+      title: Text(
+        widget.meal.name,
       ),
-    );
+      trailing: IconButton(
+        icon: icon,
+        onPressed: () {
+          setState(() {
+            _favorite = !_favorite;
+          });
+          _favorite
+              ? _repository?.insert(widget.meal)
+              : _repository?.delete(widget.meal);
+        },
+      ),
+    ));
   }
 }
