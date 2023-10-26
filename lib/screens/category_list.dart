@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meals_app/models/category.dart';
-import 'package:meals_app/screens/meal_list.dart';
+import 'package:meals_app/screens/category_detail.dart';
 import 'package:meals_app/services/category_service.dart';
 
 class CategoryList extends StatefulWidget {
@@ -58,13 +58,15 @@ class _CategoryItemState extends State<CategoryItem> {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return MealList(categoryName: widget.category.name);
+          return CategoryDetail(category: widget.category);
         }));
       },
       child: Card(
         child: Column(
           children: [
-            image,
+            Hero(
+              tag: widget.category.id,
+              child: image),
             Text(widget.category.name),
           ],
         ),

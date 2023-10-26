@@ -32,7 +32,8 @@ class _MealListState extends State<MealList> {
     return Scaffold(
       body: ListView.builder(
           itemCount: _meals?.length ?? 0,
-          itemBuilder: ((context, index) => Text(_meals?[index].name ?? ''))),
+          itemBuilder: ((context, index) =>
+              Card(child: Text(_meals?[index].name ?? '')))),
     );
   }
 }
