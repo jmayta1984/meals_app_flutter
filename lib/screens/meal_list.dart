@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meals_app/models/meal.dart';
 import 'package:meals_app/services/meal_service.dart';
 
 class MealList extends StatefulWidget {
@@ -29,11 +30,37 @@ class _MealListState extends State<MealList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView.builder(
-          itemCount: _meals?.length ?? 0,
-          itemBuilder: ((context, index) =>
-              Card(child: Text(_meals?[index].name ?? '')))),
+    return ListView.builder(
+        itemCount: _meals?.length ?? 0,
+        itemBuilder: ((context, index) => MealItem(meal: _meals?[index])));
+  }
+}
+
+class MealItem extends StatefulWidget {
+  const MealItem({
+    super.key,
+    required this.meal,
+  });
+
+  final Meal meal;
+
+  @override
+  State<MealItem> createState() => _MealItemState();
+}
+
+class _MealItemState extends State<MealItem> {
+  @override
+  Widget build(BuildContext context) {
+    final image = Image.network(widget.meal.imageUrl);
+
+    return Card(
+      child: ListTile(
+        leading: image,
+        title: Text(
+          widget.meal.name,
+        ),
+        trailing: const Icon(Icons.favorite),
+      ),
     );
   }
 }
