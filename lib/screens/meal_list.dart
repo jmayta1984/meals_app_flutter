@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:meals_app/models/category.dart';
 import 'package:meals_app/models/meal.dart';
 import 'package:meals_app/repositories/meal_repository.dart';
 import 'package:meals_app/services/meal_service.dart';
+import 'package:readmore/readmore.dart';
 
 class MealList extends StatefulWidget {
-  const MealList({super.key, required this.categoryName});
-  final String categoryName;
+  const MealList({super.key, required this.category});
+  final Category category;
 
   @override
   State<MealList> createState() => _MealListState();
@@ -16,7 +18,7 @@ class _MealListState extends State<MealList> {
   List? _meals;
 
   initialize() async {
-    _meals = await _mealService?.getAll(widget.categoryName) ?? [];
+    _meals = await _mealService?.getAll(widget.category.name) ?? [];
     setState(() {
       _meals = _meals;
     });
@@ -32,8 +34,40 @@ class _MealListState extends State<MealList> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: _meals?.length ?? 0,
-        itemBuilder: ((context, index) => MealItem(meal: _meals?[index])));
+        itemCount: _meals == null ? 0 : _meals!.length + 1,
+        itemBuilder: ((context, index) {
+          return index == 0
+              ? CategoryHeader(category: widget.category)
+              : MealItem(meal: _meals?[index - 1]);
+        }));
+  }
+}
+
+class CategoryHeader extends StatefulWidget {
+  const CategoryHeader({super.key, required this.category});
+
+  final Category category;
+
+  @override
+  State<CategoryHeader> createState() => _CategoryHeaderState();
+}
+
+class _CategoryHeaderState extends State<CategoryHeader> {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ReadMoreText(
+        widget.category.description,
+        trimLines: 2,
+        trimMode: TrimMode.Line,
+        trimCollapsedText: 'Show more',
+        trimExpandedText: 'Show less',
+        moreStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        lessStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+      ),
+    ));
   }
 }
 
@@ -90,9 +124,11 @@ class _MealItemState extends State<MealItem> {
       trailing: IconButton(
         icon: icon,
         onPressed: () {
-          setState(() {
-            _favorite = !_favorite;
-          });
+          if (mounted) {
+            setState(() {
+              _favorite = !_favorite;
+            });
+          }
           _favorite
               ? _repository?.insert(widget.meal)
               : _repository?.delete(widget.meal);

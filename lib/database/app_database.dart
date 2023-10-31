@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -14,7 +13,6 @@ class AppDatabase {
         onCreate: (database, version) {
       String query =
           'create table $tableName (id text primary key , name text )';
-      log(query);
       database.execute(query);
     }, version: version);
     return _db as Database;

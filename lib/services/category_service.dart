@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -12,7 +11,6 @@ class CategoryService {
     final http.Response response = await http.get(Uri.parse(baseUrl));
 
     if (response.statusCode == HttpStatus.ok) {
-      log(response.body);
       final jsonResponse = json.decode(response.body);
       final List maps = jsonResponse['categories'];
       return maps.map((map) => Category.fromJson(map)).toList();
